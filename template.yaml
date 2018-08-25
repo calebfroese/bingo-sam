@@ -60,15 +60,27 @@ Resources:
     Properties:
       ApiId: !GetAtt BingoQLApi.ApiId
       Definition: |
+        type Mutation {
+          joinGame(username: String): Player
+        }
+
+        type Player {
+          username: String!
+        }
+
+        type Query {
+          allPlayers: [Player]
+        }
+
+        type Subscription {
+          subscribeToPlayersChanged: Player
+            @aws_subscribe(mutations: ["joinGame"])
+        }
+
         schema {
           query: Query
           mutation: Mutation
-        }
-        type Query {
-          allPlayers:String
-        }
-        type Mutation {
-          joinGame(username:String): String
+          subscription: Subscription
         }
 
   # AppSync Datasource
@@ -104,4 +116,18 @@ Resources:
             }
         }
       ResponseMappingTemplate: |
-        "$utils.toJson($ctx.result)"
+        $utils.toJson($ctx.result)
+  AllPlayersResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId: !GetAtt BingoQLApi.ApiId
+      TypeName: 'Query'
+      FieldName: 'allPlayers'
+      DataSourceName: !GetAtt BingoDataSource.Name
+      RequestMappingTemplate: |
+        {
+            "version" : "2017-02-28",
+            "operation" : "Scan"
+        }
+      ResponseMappingTemplate: |
+        $utils.toJson($ctx.result.items)
