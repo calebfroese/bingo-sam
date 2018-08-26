@@ -28,7 +28,7 @@ export async function joinGame(event: any, context: any, callback: any) {
       TableName: process.env.DYNAMODB_BINGO_TABLE,
       Item: {
         username: event.username,
-        card: QUESTIONS
+        card: createCard()
       }
     })
     .promise();
@@ -45,11 +45,7 @@ export function createCard(
   }
 ) {
   const qs = shuffleArray([...QUESTIONS]);
-  return [
-    [qs[0], qs[1], qs[2]],
-    [qs[3], qs[4], qs[5]],
-    [qs[6], qs[7], qs[8]],
-  ];
+  return [[qs[0], qs[1], qs[2]], [qs[3], qs[4], qs[5]], [qs[6], qs[7], qs[8]]];
 }
 
 const shuffleArray = arr =>

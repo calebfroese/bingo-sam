@@ -183,7 +183,7 @@ Resources:
   JoinGameFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
+      CodeUri: src/dist/
       Handler: app.joinGame
       Runtime: nodejs8.10
       Policies:
