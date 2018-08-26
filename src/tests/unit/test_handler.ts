@@ -8,15 +8,6 @@ describe('Join Game', function() {
     const [rowa, rowb, rowc] = card;
   });
 
-  it('does not contain duplicates', async () => {
-    const card = createCard();
-    const flattened = card.reduce((prev, row) => [...prev, ...row], []);
-    flattened.forEach(val => {
-      // should only appear once
-      expect(flattened.filter(v => v === val).length).eq(1);
-    });
-  });
-
   it('card is random', async () => {
     const [rowa, rowb, rowc] = createCard();
     const [rowa2, rowb2, rowc2] = createCard();

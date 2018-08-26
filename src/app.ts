@@ -1,5 +1,4 @@
 import { DynamoDB } from 'aws-sdk';
-import * as faker from 'faker';
 
 import { QUESTIONS } from './questions';
 
