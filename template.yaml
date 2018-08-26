@@ -1,3 +1,10 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 300
+
 Description: >
   bingo-aws
 
@@ -46,6 +53,19 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Path: '/'
+  AppSyncLambdaInvokePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AppSyncLambdaInvokePolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:*
+            Resource: '*'
+      Roles:
+        - !Ref ServiceRole
 
   # GraphQL Api
   BingoQLApi:
@@ -97,26 +117,26 @@ Resources:
         AwsRegion: !Ref "AWS::Region"
 
   # Resolvers
-  JoinGameResolver:
-    Type: AWS::AppSync::Resolver
-    Properties:
-      ApiId: !GetAtt BingoQLApi.ApiId
-      TypeName: 'Mutation'
-      FieldName: 'joinGame'
-      DataSourceName: !GetAtt BingoDataSource.Name
-      RequestMappingTemplate: |
-        {
-            "version" : "2017-02-28",
-            "operation" : "PutItem",
-            "key" : {
-                "username" : { "S" : "${ctx.arguments.username}" }
-            },
-            "attributeValues" : {
-                "table": $util.dynamodb.toDynamoDBJson($ctx.arguments.organisations)
-            }
-        }
-      ResponseMappingTemplate: |
-        $utils.toJson($ctx.result)
+  # JoinGameResolver:
+  #   Type: AWS::AppSync::Resolver
+  #   Properties:
+  #     ApiId: !GetAtt BingoQLApi.ApiId
+  #     TypeName: 'Mutation'
+  #     FieldName: 'joinGame'
+  #     DataSourceName: !GetAtt BingoDataSource.Name
+  #     RequestMappingTemplate: |
+  #       {
+  #           "version" : "2017-02-28",
+  #           "operation" : "PutItem",
+  #           "key" : {
+  #               "username" : { "S" : "${ctx.arguments.username}" }
+  #           },
+  #           "attributeValues" : {
+  #               "table": $util.dynamodb.toDynamoDBJson($ctx.arguments.organisations)
+  #           }
+  #       }
+  #     ResponseMappingTemplate: |
+  #       $utils.toJson($ctx.result)
   AllPlayersResolver:
     Type: AWS::AppSync::Resolver
     Properties:
@@ -131,3 +151,44 @@ Resources:
         }
       ResponseMappingTemplate: |
         $utils.toJson($ctx.result.items)
+
+  JoinGameLambdaResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId: !GetAtt BingoQLApi.ApiId
+      TypeName: 'Mutation'
+      FieldName: 'joinGame'
+      DataSourceName: !GetAtt JoinGameDataSource.Name
+      RequestMappingTemplate: |
+        {
+            "version": "2017-02-28",
+            "operation": "Invoke",
+            "payload": {
+                "username": "${ctx.arguments.username}"
+            }
+        }
+      ResponseMappingTemplate: |
+        $utils.toJson($ctx.result)
+
+  JoinGameDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId: !GetAtt BingoQLApi.ApiId
+      Name: 'JoinGameDataSource'
+      Type: 'AWS_LAMBDA'
+      ServiceRoleArn: !GetAtt ServiceRole.Arn
+      LambdaConfig:
+        LambdaFunctionArn: !GetAtt JoinGameFunction.Arn
+
+  JoinGameFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.joinGame
+      Runtime: nodejs8.10
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AWSLambdaFullAccess
+      Environment:
+        Variables:
+          DYNAMODB_BINGO_TABLE: !Ref BingoTable

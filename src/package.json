@@ -10,10 +10,17 @@
     "axios": "^0.18.0"
   },
   "scripts": {
-    "test": "mocha tests/unit/"
+    "pre:build": "rm -rf ./dist",
+    "build": "tsc",
+    "test": "mocha ./dist/tests/**/*",
+    "watch:test": "nodemon --watch app --watch tests --exec \"npm run build && npm test\" -e ts,js,json"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.9.2",
     "chai": "^4.1.2",
-    "mocha": "^5.1.1"
+    "mocha": "^5.1.1",
+    "nodemon": "^1.18.3"
   }
 }
