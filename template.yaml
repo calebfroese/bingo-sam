@@ -84,9 +84,14 @@ Resources:
           joinGame(username: String): Player
         }
 
+        type Item {
+          value: String!
+          selected: Boolean
+        }
+
         type Player {
           username: String!
-          card: [[String]]
+          card: [[Item]]
         }
 
         type Query {

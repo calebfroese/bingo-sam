@@ -17,7 +17,10 @@ export async function joinGame(event: any, context: any, callback: any) {
 }
 
 export function createCard() {
-  const qs = shuffleArray([...QUESTIONS]);
+  const qs = shuffleArray([...QUESTIONS]).map(value => ({
+    value,
+    selected: false
+  }));
   return [[qs[0], qs[1], qs[2]], [qs[3], qs[4], qs[5]], [qs[6], qs[7], qs[8]]];
 }
 
