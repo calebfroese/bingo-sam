@@ -13,7 +13,7 @@
     "pre:build": "rm -rf ./dist",
     "build": "tsc",
     "test": "mocha ./dist/tests/**/*",
-    "watch:test": "nodemon --watch app --watch tests --exec \"npm run build && npm test\" -e ts,js,json"
+    "watch:test": "nodemon --watch **/*.ts --exec \"npm run build && npm test\" -e ts,js,json"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",

@@ -44,5 +44,16 @@ export function createCard(
     columns: 5
   }
 ) {
-  return [];
+  const qs = shuffleArray([...QUESTIONS]);
+  return [
+    [qs[0], qs[1], qs[2]],
+    [qs[3], qs[4], qs[5]],
+    [qs[6], qs[7], qs[8]],
+  ];
 }
+
+const shuffleArray = arr =>
+  arr
+    .map(a => [Math.random(), a])
+    .sort((a, b) => a[0] - b[0])
+    .map(a => a[1]);
