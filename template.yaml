@@ -86,6 +86,7 @@ Resources:
 
         type Player {
           username: String!
+          card: [[String]]
         }
 
         type Query {

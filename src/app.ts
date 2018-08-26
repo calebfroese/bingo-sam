@@ -1,4 +1,4 @@
-const AWS = require('aws-sdk');
+import { DynamoDB } from 'aws-sdk';
 
 const QUESTIONS = [
   'A',
@@ -23,19 +23,17 @@ const QUESTIONS = [
 ];
 
 export async function joinGame(event: any, context: any, callback: any) {
-  const result = await new AWS.DynamoDB.DocumentClient()
+  const Item = {
+    username: event.username,
+    card: createCard()
+  };
+  await new DynamoDB.DocumentClient()
     .put({
       TableName: process.env.DYNAMODB_BINGO_TABLE,
-      Item: {
-        username: event.username,
-        card: createCard()
-      }
+      Item
     })
     .promise();
-
-  callback(null, {
-    username: JSON.stringify(result.$response)
-  });
+  callback(null, Item);
 }
 
 export function createCard(
