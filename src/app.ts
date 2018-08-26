@@ -1,26 +1,7 @@
 import { DynamoDB } from 'aws-sdk';
+import * as faker from 'faker';
 
-const QUESTIONS = [
-  'A',
-  'B',
-  'C',
-  'D',
-  'E',
-  'F',
-  'G',
-  'H',
-  'I',
-  'J',
-  'K',
-  'L',
-  'M',
-  'N',
-  'O',
-  'P',
-  '123',
-  '456',
-  '678'
-];
+import { QUESTIONS } from './questions';
 
 export async function joinGame(event: any, context: any, callback: any) {
   const Item = {
