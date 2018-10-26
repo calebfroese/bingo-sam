@@ -1,0 +1,28 @@
+type Mutation {
+    joinGame(username: String): Player
+}
+
+type Item {
+    value: String!
+    selected: Boolean
+}
+
+type Player {
+    username: String!
+    card: [[Item]]
+}
+
+type Query {
+    allPlayers: [Player]
+}
+
+type Subscription {
+    subscribeToPlayersChanged: Player
+    @aws_subscribe(mutations: ["joinGame"])
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
