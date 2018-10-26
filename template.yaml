@@ -79,35 +79,7 @@ Resources:
     Type: AWS::AppSync::GraphQLSchema
     Properties:
       ApiId: !GetAtt BingoQLApi.ApiId
-      Definition: |
-        type Mutation {
-          joinGame(username: String): Player
-        }
-
-        type Item {
-          value: String!
-          selected: Boolean
-        }
-
-        type Player {
-          username: String!
-          card: [[Item]]
-        }
-
-        type Query {
-          allPlayers: [Player]
-        }
-
-        type Subscription {
-          subscribeToPlayersChanged: Player
-            @aws_subscribe(mutations: ["joinGame"])
-        }
-
-        schema {
-          query: Query
-          mutation: Mutation
-          subscription: Subscription
-        }
+      DefinitionS3Location: src/schema.graphql
 
   # AppSync Datasource
   BingoDataSource:
